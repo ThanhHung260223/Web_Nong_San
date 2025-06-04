@@ -1,0 +1,320 @@
+{%extends "page/base.html"%}
+{% load static %}
+{% block base %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo dõi đơn hàng</title>
+    <style>
+        /* Reset styles */
+        {% comment %} * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        } {% endcomment %}
+
+        h1 {
+            text-align: center;
+            font-size: 30px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Tabs container */
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #555;
+            border: none;
+            background-color: #f4f6f9;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab:hover {
+            background-color: #ddd;
+        }
+
+        .tab.active {
+            background-color: #3498db;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Trạng thái đơn hàng */
+        .order-status {
+            display: none;
+            padding-top: 20px;
+        }
+
+        .order-status.active {
+            display: block;
+        }
+
+        /* Biểu tượng trạng thái */
+        .status-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* Danh sách đơn hàng */
+        .order-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .order-item {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .order-info .order-id {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .order-price {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .order-time {
+            color: #888;
+        }
+
+        /* Nút Xem chi tiết */
+        .btn-detail {
+            padding: 8px 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-detail:hover {
+            background-color: #2980b9;
+        }
+
+        /* Không có đơn hàng */
+        .no-orders {
+            text-align: center;
+            font-style: italic;
+            color: #ccc;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" style="margin-bottom: 50px;">
+        <h1 style="margin-top: 10px;">Theo dõi đơn hàng</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pending')">Chờ xác nhận</button>
+            <button class="tab" onclick="showTab('processing')">Chờ lấy hàng</button>
+            <button class="tab" onclick="showTab('shipping')">Đang vận chuyển</button>
+            <button class="tab" onclick="showTab('delivered')">Đã giao</button>
+            <button class="tab" onclick="showTab('cancelled')">Đã hủy</button>
+        </div>
+
+        <!-- Content of each tab -->
+        <div class="order-status active" id="pending">
+            <div class="status-title">Chờ xác nhận</div>
+            {% if orders_by_status.pending %}
+                <ul class="order-list">
+                    {% for order in orders_by_status.pending %}
+                        <li class="order-item">
+                            <div class="order-info">
+                                <span class="order-id">Mã đơn hàng: {{ order.order_id }}</span>
+                                <span class="order-price">Giá: {{ order.price|floatformat:3|cut:"."|add:"₫"}}</span>
+                                <span class="order-time">Ngày đặt: {{ order.order_time|date:"d/m/Y " }}</span>
+                            </div>
+                            <a href="#" style="margin-right: 9px; background-color: #de2100" class="btn-detail" onclick="cancelOrder({{ order.order_id }})">Hủy đơn hàng</a>
+                            <a href="{% url 'order_detail' order.order_id %}" class="btn-detail">Xem chi tiết</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-orders">Không có đơn hàng trong trạng thái này.</div>
+            {% endif %}
+        </div>
+
+        <div class="order-status" id="processing">
+            <div class="status-title">Chờ lấy hàng</div>
+            {% if orders_by_status.processing %}
+                <ul class="order-list">
+                    {% for order in orders_by_status.processing %}
+                        <li class="order-item">
+                            <div class="order-info">
+                                <span class="order-id">Mã đơn hàng: {{ order.order_id }}</span>
+                                <span class="order-price">Giá: {{ order.price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                <span class="order-time">Ngày đặt: {{ order.order_time|date:"d/m/Y " }}</span>
+                            </div>
+                            <a href="{% url 'order_detail' order.order_id %}" class="btn-detail">Xem chi tiết</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-orders">Không có đơn hàng trong trạng thái này.</div>
+            {% endif %}
+        </div>
+
+        <div class="order-status" id="shipping">
+            <div class="status-title">Đang vận chuyển</div>
+            {% if orders_by_status.shipping %}
+                <ul class="order-list">
+                    {% for order in orders_by_status.shipping %}
+                        <li class="order-item">
+                            <div class="order-info">
+                                <span class="order-id">Mã đơn hàng: {{ order.order_id }}</span>
+                                <span class="order-price">Giá: {{ order.price|floatformat:3|cut:"."|add:"₫"}} </span>
+                                <span class="order-time">Ngày đặt: {{ order.order_time|date:"d/m/Y " }}</span>
+                            </div>
+                            <a href="{% url 'order_detail' order.order_id %}" class="btn-detail">Xem chi tiết</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-orders">Không có đơn hàng trong trạng thái này.</div>
+            {% endif %}
+        </div>
+
+        <div class="order-status" id="delivered">
+            <div class="status-title">Đã giao</div>
+            {% if orders_by_status.delivered %}
+                <ul class="order-list">
+                    {% for order in orders_by_status.delivered %}
+                        <li class="order-item">
+                            <div class="order-info">
+                                <span class="order-id">Mã đơn hàng: {{ order.order_id }}</span>
+                                <span class="order-price">Giá: {{ order.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                                <span class="order-time">Ngày đặt: {{ order.order_time|date:"d/m/Y " }}</span>
+                            </div>
+                            <a href="{% url 'order_detail' order.order_id %}" class="btn-detail">Xem chi tiết</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-orders">Không có đơn hàng trong trạng thái này.</div>
+            {% endif %}
+        </div>
+
+        <div class="order-status" id="cancelled">
+            <div class="status-title">Đã hủy</div>
+            {% if orders_by_status.cancelled %}
+                <ul class="order-list">
+                    {% for order in orders_by_status.cancelled %}
+                        <li class="order-item">
+                            <div class="order-info">
+                                <span class="order-id">Mã đơn hàng: {{ order.order_id }}</span>
+                                <span class="order-price">Giá: {{ order.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                                <span class="order-time">Ngày đặt: {{ order.order_time|date:"d/m/Y " }}</span>
+                            </div>
+                            
+                            <a href="{% url 'order_detail' order.order_id %}" class="btn-detail">Xem chi tiết</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-orders">Không có đơn hàng trong trạng thái này.</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        // Hàm để thay đổi tab
+        function showTab(status) {
+            // Ẩn tất cả các tab
+            var statuses = document.querySelectorAll('.order-status');
+            statuses.forEach(function (statusElement) {
+                statusElement.classList.remove('active');
+            });
+
+            // Hiển thị tab đã chọn
+            var activeTab = document.getElementById(status);
+            activeTab.classList.add('active');
+
+            // Cập nhật trạng thái các tab
+            var tabs = document.querySelectorAll('.tab');
+            tabs.forEach(function (tab) {
+                tab.classList.remove('active');
+            });
+
+            var activeTabBtn = document.querySelector('.tab:nth-child(' + (Array.from(tabs).indexOf(document.querySelector(`button[onclick="showTab('${status}')"]`)) + 1) + ')');
+            activeTabBtn.classList.add('active');
+        }
+        function cancelOrder(orderId) {
+            const csrfToken = '{{ csrf_token }}'; // Đảm bảo CSRF token được thêm vào template
+            fetch(`/cancel-order/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.success);
+                    location.reload(); // Làm mới trang để cập nhật trạng thái
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            });
+        }
+    </script>
+
+</body>
+</html>
+{% endblock %}

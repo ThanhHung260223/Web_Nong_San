@@ -1,0 +1,200 @@
+{%extends "page/base.html"%}
+{% load static %}
+{% block base %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'myapp/styles.css' %}">
+    <title>Danh sách yêu thích</title>
+    <style>
+        .wishlist-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 50px;
+        }
+        .header__menu ul li{
+            margin: 15px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    
+        li {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+    
+        img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+    
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: auto;
+            
+        }
+    
+        .remove-button:hover {
+            background-color: #d32f2f;
+        }
+    
+        .empty-wishlist {
+            font-size: 16px;
+            color: #999;
+            text-align: center;
+        }
+    
+        /* Kiểu dáng cho container hình ảnh */
+        .discount-container {
+            position: relative;
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+            border-radius: 5px;
+            overflow: hidden; /* Đảm bảo phần tử con không vượt ra ngoài khung */
+        }
+
+        /* Kiểu dáng cho hình ảnh */
+        .discount-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Đảm bảo hình ảnh co giãn mà không bị méo */
+            border-radius: 5px; /* Bo góc hình ảnh */
+        }
+
+        /* Kiểu dáng cho nhãn giảm giá */
+        .discount-badge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background-color: #ff0000; /* Màu nền đỏ */
+            color: white; /* Màu chữ trắng */
+            padding: 2px 5px; /* Khoảng cách nội dung */
+            font-weight: bold; /* In đậm */
+            border-radius: 5px; /* Bo góc nhãn */
+            font-size: 9px; /* Kích thước chữ */
+            z-index: 1; /* Hiển thị trên hình ảnh */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+        }
+    
+        /* Kiểu dáng cho tên sản phẩm và giá */
+        .product-info {
+            width: 300px;
+            padding-left: 10px;
+        }
+    
+        .product-info span {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        /* Kiểu dáng cho các nút xóa */
+        .quantity-controls {
+            margin-left: 20px;
+        }
+    
+        .quantity-controls button {
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        .quantity-controls button:hover {
+            background-color: #d32f2f;
+        }
+        ul, ol {
+            padding: 0;
+            margin: -18px;
+        }
+    </style>
+    
+</head>
+<body>
+
+<h3 style="text-align:center; margin-bottom: 50px">Danh sách yêu thích của bạn</h3>
+
+<div class="wishlist-container">
+    {% if wishlist_items %}
+        <ul>
+            {% for item in wishlist_items %}
+                <li>
+                    <div>
+                        <div style="position: relative; max-width: 100px; max-height: 100px; margin-right: 10px; border-radius: 5px; overflow: hidden;">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                 onerror="this.src='{% static 'myapp/no_image_available.png' %}'" 
+                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                            {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                                <div class="discount-badge">
+                                    -{{ item.product.coupon.discount }}%
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div  style="width: 300px" >
+                        <a href="{% url 'product_detail' item.product.product_id %}" style="color: black;">{{ item.product.name }}</a><br>
+                    </div>
+                    <div style="width: 200px">
+                        {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                            <span class="original-price" style="text-decoration: line-through; color: #777;">
+                                {{ item.product.price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                            <span class="discounted-price" style=" margin-left: 10px;">   
+                                {{ item.discounted_price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                        {% else %}
+                            <span>{{ item.product.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                        {% endif %}
+
+                    </div>
+                    <div style="margin-left: 20px; display: flex; " class="quantity-controls">
+                        <form action="{% url 'add_to_cart' item.product.product_id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="border: none; background: none; color: #b92c22; font-size: 25px; float: left; ">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </form>
+                        <button style="margin-left: 15px;" class="remove-button" data-product-id="{{ item.product.product_id }}">Xóa</button>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-wishlist">Danh sách yêu thích của bạn đang trống.</p>
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.remove-button').click(function() {
+            var productId = $(this).data('product-id');
+        
+            $.post("{% url 'remove_from_wishlist' product_id=0 %}".replace('0', productId), {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }).done(function() {
+                location.reload();
+            });
+        });
+    });
+</script>
+</body>
+</html>
+{% endblock %}

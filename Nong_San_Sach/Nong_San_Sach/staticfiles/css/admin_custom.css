@@ -1,0 +1,30 @@
+/* admin_custom.css */
+
+
+/* Căn giữa nội dung các cột */
+
+table.admin-table th,
+table.admin-table td {
+    vertical-align: middle;
+    /* Căn giữa theo chiều dọc */
+}
+
+
+/* Căn giữa checkbox mặc định của admin */
+
+input[type="checkbox"] {
+    margin: 0 auto;
+    /* Căn giữa checkbox */
+    display: block;
+    /* Làm cho checkbox là block element */
+}
+
+
+/* Căn giữa checkbox tùy chỉnh */
+
+input[type="checkbox"].custom-checkbox {
+    margin: 0 auto;
+    /* Căn giữa checkbox */
+    display: block;
+    /* Làm cho checkbox là block element */
+}

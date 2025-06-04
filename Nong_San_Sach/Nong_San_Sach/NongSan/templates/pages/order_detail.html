@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết đơn hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .order-detail-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .order-title {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+        
+        .order-info {
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .order-info span {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .order-items {
+            margin-top: 30px;
+        }
+        
+        .order-items h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .order-items ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .order-items li {
+            display: flex;
+            align-items: flex-start;
+            border-bottom: 1px solid #f2f2f2;
+            padding: 15px 0;
+            position: relative;
+        }
+        
+        .order-items img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .order-items .item-info {
+            flex: 1;
+        }
+        
+        .order-items .item-info p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+        
+        .order-items .item-info .product-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .order-items .item-info .price {
+            color: #27ae60;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #0b931c;
+            font-size: 16px;
+        }
+        
+        .discounted-price {
+            color: #0b931c;    
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 18px;
+            left: 5px;
+            background-color: #ff0000;
+            color: white;
+            padding: 3px 5px;
+            font-weight: bold;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-detail {
+            padding: 8px 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-detail:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="order-detail-container">
+        <div class="order-title">Chi tiết đơn hàng - Mã đơn hàng: {{ order.order_id }}</div>
+
+        <div class="order-info">
+            <span><strong>Giá trị đơn hàng:</strong> {{ order.price|floatformat:3|cut:"."|add:"₫" }}</span>
+            <span><strong>Ngày đặt:</strong> {{ order.order_time|date:"d/m/Y" }}</span>
+            <span><strong>Trạng thái:</strong> {{ order.get_status_order_display }}</span>
+            {% if order.delivery_time %}
+                <span><strong>Ngày giao hàng:</strong> {{ order.delivery_time|date:"d/m/Y" }}</span>
+            {% endif %}
+            <span><strong>Địa chỉ giao hàng:</strong> {{ order.address_detail }}</span>
+        </div>
+
+        <div class="order-items">
+            <h3>Danh sách sản phẩm:</h3>
+            <ul>
+                {% for detail in order_details %}
+                    <li>
+                        <img src="{{ detail.product.image.url }}" alt="{{ detail.product.name }}">
+                        {% if detail.product.coupon and detail.product.coupon.expiry_date > now %}
+                            <div class="discount-badge">
+                                -{{ detail.product.coupon.discount }}%
+                            </div>
+                        {% endif %}
+                        <div class="item-info">
+                            <p class="product-name">{{ detail.product.name }}</p>
+                            <p>Số lượng: {{ detail.quantity }}</p>
+                            {% comment %} <p class="price">Giá: {{ detail.product.price }} VND</p> {% endcomment %}
+                            {% if detail.product.coupon and detail.product.coupon.expiry_date > now %}
+                                <span class="original-price" style="text-decoration: line-through; color: #777;">
+                                    Giá: {{ detail.product.price|floatformat:3|cut:"."|add:"₫" }} 
+                                </span>
+                                <span class="discounted-price" style=" margin-left: 10px;">   
+                                    {{ detail.discounted_price|floatformat:3|cut:"."|add:"₫" }} 
+                                </span>
+                            {% else %}
+                                <span style=" color: #0b931c">Giá: {{ detail.product.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                            {% endif %}
+                        </div>
+                        {% if order.status_order == 'Đã giao' %}
+                            <a href="{% url 'product_review' detail.product.product_id %}" class="btn-detail" style="background-color: #077315; margin-right: 9px;">Đánh giá</a>
+                        {% endif %}
+                        <a href="{% url 'add_to_cart' detail.product.product_id %}" class="btn-detail" style="background-color: #de3c00; margin-right: 9px;">Mua lại</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a href="{% url 'track_orders' %}" class="back-button">Trở lại trang theo dõi đơn hàng</a>
+    </div>
+
+</body>
+</html>

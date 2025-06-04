@@ -1,0 +1,322 @@
+{%extends "page/base.html"%}
+{%load static%}
+{% block base %}
+
+<style>
+    .filter__sort {
+    position: relative;
+    cursor: pointer;
+}
+
+.filter__sort span {
+    font-size: 16px;
+    color: #1c1c1c;
+    font-weight: 700;
+}
+
+.filter__sort .sort-dropdown {
+    position: absolute;
+    left: 0;
+    top: 30px;
+    background-color: #ffffff;
+    padding: 10px;
+    border: 1px solid #e5e5e5;
+    min-width: 150px;
+    display: none;
+    z-index: 9;
+}
+
+.filter__sort:hover .sort-dropdown {
+    display: block;
+}
+
+.sort-dropdown li {
+    list-style: none;
+    font-size: 14px;
+    color: #1c1c1c;
+    line-height: 30px;
+}
+
+.sort-dropdown li a {
+    color: #1c1c1c;
+    text-decoration: none;
+}
+
+.sort-dropdown li a.active {
+    font-weight: bold;
+}
+
+
+/* css search */
+/* CSS cho phần tìm kiếm */
+/* CSS cho phần tìm kiếm */
+/* CSS cho phần tìm kiếm */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa ô tìm kiếm và nút */
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1; /* Giúp ô tìm kiếm tự động giãn ra */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-btn {
+    padding: 10px 20px; /* Tăng độ rộng của nút */
+    background-color: #8BC34A; /* Màu nền của nút tìm kiếm */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px; /* Giảm kích thước chữ nếu cần */
+    white-space: nowrap; /* Ngăn chữ bị xuống dòng */
+}
+
+.search-btn:hover {
+    background-color: #7CB342; /* Màu khi hover nút tìm kiếm */
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ff0000;  /* Màu nền đỏ */
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1;
+}
+#category-list {
+    list-style: none;
+    padding: 0;
+}
+
+#category-list li {
+    margin: 10px 0;
+}
+
+#category-list a {
+    text-decoration: none;
+    color: #333; /* Màu chữ mặc định */
+    display: block;
+    padding-left:10px ;
+    transition: background-color 0.3s, transform 0.3s; /* Hiệu ứng chuyển tiếp */
+}
+
+#category-list a:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    transform: translateY(-5px); /* Hiệu ứng nổi lên */
+}
+
+#category-list a.active {
+    background-color: #d0ffd0; /* Màu nền khi active */
+    font-weight: bold; /* Đậm hơn khi active */
+}
+
+.product__item {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    border-radius: 10px;
+    border: 1px solid #e1eaf5;
+}
+.product__item:hover {
+    transform: translateY(-10px); /* Raise the item up on hover */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+</style>
+
+<section class="breadcrumb-section set-bg" data-setbg="{%static 'img/breadcrumb.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Organi Shop</h2>
+                    <div class="breadcrumb__option">
+                        <a href="{% url 'index' %}">Trang chủ</a>
+                        <span>Cửa hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ <!-- Hiển thị toàn bộ sản phẩm theo danh mục -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <!-- search ở đây -->
+                <div class="sidebar">
+                    <div class="sidebar__search">
+                        <form action="{% url 'search' %}" method="get" class="search-form">
+                            <input type="text" placeholder="Bạn đang cần gì?" name="query" value="{{ query }}" class="search-input">
+                            <button type="submit" class="site-btn search-btn">Tìm kiếm</button>
+                        </form>
+                    </div>
+                    <div class="sidebar__item">
+                        <h4>Danh mục</h4>
+                        <ul id="category-list">
+                            <li><a href="{% url 'products' %}">Tất cả</a></li>
+                            {% for cate in category %}
+                            <li><a href="{% url 'products_by_category' cate.category_id %}">{{ cate.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div> 
+                    
+                    <!-- <div class="sidebar__item">
+                        <h4>Giá</h4>
+                        <div class="price-range-wrap">
+                            <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                data-min="10" data-max="500">
+                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                            </div>
+                            <div class="range-slider">
+                                <div class="price-input">
+                                    <input type="text" id="minamount">
+                                    <input type="text" id="maxamount">
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+            <!-- Các size kích thước là phần này -->
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Sản phẩm mới</h4>
+                            <div class="latest-product__slider owl-carousel">
+                                <div class="latest-prdouct__slider__item">
+                                    {% for product in latest_products %}
+                                        <a href="{% url 'product_detail' product.product_id %}" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>{{ product.name }}</h6>
+                                                <span>{{ product.price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                            </div>
+                                        </a>
+                                        {% endfor %}
+                                </div>
+                                <div class="latest-prdouct__slider__item">
+                                    {% for product in latest_products %}
+                                        <a href="{% url 'product_detail' product.product_id %}" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>{{ product.name }}</h6>
+                                                <span>{{ product.price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                            </div>
+                                        </a>
+                                        {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-7">
+                <div class="filter__item" style="padding-left:30px ; border-top:none ; padding-top: 0px;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5">
+                            <div class="filter__sort">
+                                <span>Sắp Xếp <i class="fa fa-angle-down"></i></span>
+                                <ul class="sort-dropdown">
+                                    <li><a href="?sort=default" {% if sort_option == 'default' %}class="active"{% endif %}>Mặc định</a></li>
+                                    <li><a href="?sort=price_asc" {% if sort_option == 'price_asc' %}class="active"{% endif %}>Giá tăng</a></li>
+                                    <li><a href="?sort=price_desc" {% if sort_option == 'price_desc' %}class="active"{% endif %}>Giá giảm</a></li>
+                                    <li><a href="?sort=name" {% if sort_option == 'name' %}class="active"{% endif %}>Tên</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="filter__found">
+                                <h6><span>{{ total_products }}</span> Sản phẩm tìm thấy</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 15px;">
+                    {% for item in page_obj %}
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                                <div class="product__item__pic set-bg" data-setbg="{{ item.product.image.url }}">
+                                    {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                                        <span class="discount-badge">-{{ item.product.coupon.discount }}%</span>
+                                    {% endif %}
+                                    <ul class="product__item__pic__hover" style="background: #b6e4c429; border-radius:30px;" >
+                                        <li>
+                                            <form action="{% url 'add_to_wishlist' item.product.product_id %}" method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" style="border: none; background: none; color: #762a12e8; font-size: 25px;">
+                                                    <i class="fa fa-heart"></i>
+                                                </button>   
+                                            </form>
+                                        </li>
+                                        <!-- <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
+                                        <li>
+                                            <form action="{% url 'add_to_cart' item.product.product_id %}" method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" style="border: none; background: none; color: #762a12e8; font-size: 25px;">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </button>   
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="product__item__text" style="margin-bottom: 10px;">
+                                    <h6><a href="{% url 'product_detail' item.product.product_id %}">{{ item.product.name }}</a></h6>
+                                    {% if item.discounted_price < item.product.price %}
+                                        <span style="text-decoration: line-through; color: #888; font-weight: 600;">{{ item.product.price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                        <span style="color: red; font-weight: 600;">{{ item.discounted_price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                    {% else %}
+                                        <span style='font-weight: 600;'>{{ item.product.price|floatformat:3|cut:"."|add:"₫" }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Không có sản phẩm nào trong danh mục này.</p>
+                    {% endfor %}
+                </div>
+                        
+                <div class="product__pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    {% endif %}
+                
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a class="active" href="?page={{ num }}">{{ num }}</a>
+                        {% else %}
+                            <a href="?page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                    {% endif %}
+                </div>                
+            </div>
+        </div>
+    </div>
+</section>
+{%endblock%}
+
+<script>
+    function sortProducts(selectElement) {
+        const sortValue = selectElement.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort', sortValue);
+        window.location.href = url.toString();
+    }
+</script>
+

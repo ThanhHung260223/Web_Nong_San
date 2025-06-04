@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .receipt-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .receipt-list th, .receipt-list td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .receipt-list th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .receipt-list tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .receipt-list tr:hover {
+            background-color: #e1f5fe;
+        }
+
+        a {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Danh Sách Phiếu Nhập Hàng</h1>
+    </header>
+
+    <div class="container">
+        <a href="/admin" style="background-color: #4CAF50; border-radius: 7px; float: left; color: #FFFFFF; font-size:1.1 em; padding: 12px 20px; margin-bottom: 15px; margin-top: 0px; text-decoration: none;">Admin</a>
+        <table class="receipt-list">
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Nhà Cung Cấp</th>
+                    <th>Ngày Nhập</th>
+                    <th>    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for receipt in receipts %}
+                    <tr>
+                        <td>{{ receipt.receipt_id }}</td>
+                        <td>{{ receipt.supplier.name }}</td>
+                        <td>{{ receipt.date_receipt|date:"d/m/Y" }}</td>
+                        <td>
+                            <a style="display: flex; text-align: center; justify-content: center; margin: auto; max-width: 100px;" href="{% url 'receipt_detail' receipt.receipt_id %}">Xem chi tiết</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="form-group center" >
+            <a href="/admin" style="background-color: #4CAF50; border-radius: 7px; float: left; color: #FFFFFF; font-size:1.1 em; padding: 12px 20px; margin-top: 20px;text-decoration: none; margin-right: 390px;">Admin</a>
+            <a href="{% url 'add_receipt' %}" style="float: center;">Tạo Phiếu Nhập</a>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name</p>
+    </footer>
+</body>
+</html>

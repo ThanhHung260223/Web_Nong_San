@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .receipt-detail {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .receipt-detail th, .receipt-detail td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .receipt-detail th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .receipt-detail tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .receipt-detail tr:hover {
+            background-color: #e1f5fe;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-right: 50px;
+        }
+
+        .buttons a {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.1em;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 7px;
+            text-align: center;
+            margin-top: 20px;
+            border: none;
+            margin-left: 50px;
+        }
+
+        @media print {
+            /* Chỉ hiển thị phần in */
+            body * {
+                visibility: hidden;
+            }
+
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+
+            .buttons a {
+                display: inline-block;
+                visibility: visible;
+            }
+
+            .print-area {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function printReceipt() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Chi Tiết Phiếu Nhập</h1>
+    </header>
+    
+    <div class="container">
+        <div class="print-area">
+            <h3>Mã phiếu nhập: {{ receipt.receipt_id }}</h3>
+            <p>Nhà cung cấp: {{ receipt.supplier.name }}</p>
+            <p>Ngày nhập: {{ receipt.date_receipt|date:"d/m/Y" }}</p>
+
+            <table class="receipt-detail">
+                <thead>
+                    <tr>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Đơn Giá</th>
+                        <th>Đơn Vị Tính</th>
+                        <th>HSD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in details %}
+                        <tr>
+                            <td>{{ detail.product.name }}</td>
+                            <td>{{ detail.quantity }}</td>
+                            <td>{{ detail.price }}</td>
+                            <td>{{ detail.unit }}</td>
+                            <td>{{ detail.expiry_date|date:"d/m/Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buttons">
+            
+            <a href="{% url 'receipt_list' %}">Quay lại</a>
+            <button onclick="printReceipt()" style="margin-top: 20px; background-color: #4CAF50; color: white; font-size: 1.1em; padding: 12px 20px; border-radius: 7px; border: none;">In ra</button>
+        </div>
+        
+    </div>
+</body>
+</html>

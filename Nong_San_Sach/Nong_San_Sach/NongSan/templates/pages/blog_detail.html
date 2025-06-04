@@ -1,0 +1,48 @@
+{%extends "page/base.html"%}
+{%load static%}
+
+{%block base%}
+
+<h3 style="text-align: center; margin-top: 20px; font-weight: 700; text-transform: capitalize;">{{blog.title}}</h3>
+<section class="blog-details spad" style="padding-top: 50px;">
+    <div class="container">
+        <div class="row">
+            <div class="blog__details__text">
+                    <div class="blog__details__content">
+                        <!-- Render the rich text HTML -->
+                        <div class="rich-text-content" style="justify-items: left;">
+                            {{ blog.detail|safe }}  <!-- Use 'safe' to render HTML content -->
+                        </div>
+                    </div>
+                </div>
+                <div class="blog__details__content">
+                    <div class="row">
+                            <div class="blog__details__author" style="margin-right: 50px;">
+                                <div class="blog__details__author__pic">
+                                    <img src="{{ author_image }}" alt="">
+                                </div>
+                                <div class="blog__details__author__text">
+                                    <h6 style="text-transform: capitalize;">{{author_name}}</h6>
+                                   
+                                </div>
+                            </div>
+                            <div class="blog__details__widget">
+                                <ul>
+                                    <li><span>Danh mục: </span>{{blog.title_blog}}</li>
+                                    <!-- <li><span>Tags:</span>{{blog_title.name}}</li> -->
+                                </ul>
+                                <div class="blog__details__social">
+                                    <a href="https://www.facebook.com/te.nguyen.528316?locale=vi_VN"><i class="fa fa-facebook"></i></a>
+                                    <!-- <a href="#"><i class="fa fa-twitter"></i></a> -->
+                                    <!-- <a href="#"><i class="fa fa-google-plus"></i></a> -->
+                                    <a href="https://www.linkedin.com/in/tr%E1%BA%A7n-%C4%91%C3%ACnh-bi%E1%BB%83n-40273a315/"><i class="fa fa-linkedin"></i></a>
+                                    <a href="https://mail.google.com/"><i class="fa fa-envelope"></i></a>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+{%endblock%}

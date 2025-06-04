@@ -1,0 +1,370 @@
+{%extends "page/base.html"%}
+{%load static%}
+<!-- chua co title -->
+{% block base %}
+<style>
+   .hero__search__categories {
+    position: relative;
+    cursor: pointer;
+}
+
+.category-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 0;
+    width: 200px;
+    z-index: 1;
+    display: none;
+}
+
+.category-list li {
+    padding: 5px 15px;
+}
+
+.category-list li a {
+    color: #333;
+    text-decoration: none;
+}
+
+.category-list li a:hover {
+    background-color: #f5f5f5;
+}
+
+.hero__search__categories.active .category-list {
+    display: block;
+}
+
+.hero__search__categories.active .arrow_carrot-down {
+    transform: rotate(180deg);
+}
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ff0000;  /* Màu nền đỏ */
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.featured__item {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    border-radius: 10px;
+    border: 1px solid #e1eaf5;
+}
+.featured__item:hover {
+    transform: translateY(-10px); /* Raise the item up on hover */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+#category-list {
+    list-style: none;
+    padding: 0;
+}
+
+#category-list li {
+    margin: 10px 0;
+}
+
+#category-list a {
+    text-decoration: none;
+    color: #333; /* Màu chữ mặc định */
+    display: block;
+    padding-left:10px ;
+    transition: background-color 0.3s, transform 0.3s; /* Hiệu ứng chuyển tiếp */
+}
+
+#category-list a:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    transform: translateY(-5px); /* Hiệu ứng nổi lên */
+}
+
+#category-list a.active {
+    background-color: #d0ffd0; /* Màu nền khi active */
+    font-weight: bold; /* Đậm hơn khi active */
+}
+ .product_sell {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    border-radius: 10px;
+    border: 1px solid #f1f4f8;
+}
+
+.product_sell:hover {
+    transform: translateY(-1px) scale(0.95); /* Nổi lên 10px */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Thêm hiệu ứng bóng */
+} 
+.featured__item__text h5 {
+    font-weight: 600;
+}
+
+.categories__slider .col-lg-3{
+    height: 370px;
+}
+.featured__item__text h5{
+    margin-bottom: 10px;
+}
+.banner .container {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    flex-wrap: wrap; /* Đảm bảo nội dung không bị tràn */
+}
+
+.banner__pic {
+    display: flex;
+    justify-content: center; /* Căn giữa nội dung bên trong */
+    align-items: center; /* Căn giữa nội dung bên trong */
+    max-width: 88%; /* Kích thước tối đa của ảnh */
+    overflow: hidden;
+    
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.banner__pic img {
+    width: 100%;
+    height: auto; /* Đảm bảo tỉ lệ ảnh */
+    object-fit: cover;
+    border-radius: 10px;
+    padding-left: 60px;
+    
+}
+
+</style>
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>Danh Mục Sản Phẩm</span>
+                    </div>
+                    <ul id="category-list">
+                        <li>
+                            <a href="{% url 'products' %}">Tất cả</a>
+                        </li>
+                        {% for category in categories %}
+                            {% if category.category_id %}
+                                <li>
+                                    <a href="{% url 'products_by_category' category.category_id %}">{{ category.name }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>                   
+                </div>                
+            </div>
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="{% url 'search' %}" method="get" class="search-form"> <!-- 1 là cate_id mặc định -->
+                            <input type="text" placeholder="Bạn đang cần gì?" name="query" class="search-input">
+                            <button type="submit" class="site-btn search-btn">Tìm kiếm</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>0866573341</h5>
+                            <span>hỗ trợ 24/7 </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero__item set-bg" data-setbg="{%static 'img/hero/banner.jpg' %}">
+                    <div class="hero__text">
+                        <span>NÔNG SẢN SẠCH</span>
+                        <h2>Rau củ <br />100% Hữu cơ</h2>
+                        <p>Có sẵn nhận và giao hàng miễn phí</p>
+                        <a href="{% url 'products' %}" class="primary-btn">MUA NGAY</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+ <!-- Categories Section Begin -->
+ <section class="categories">
+    <div class="container">
+        <div class="section-title">
+            <h2>Sản Phẩm Bán Chạy</h2>
+        </div>
+        <div class="row">
+            <div class="categories__slider owl-carousel">
+                {% for product in top_products %}
+                <div class="col-lg-3  product_sell">
+                    <div class="categories__item set-bg" data-setbg="{{ product.image.url }}">
+                        {% if product.coupon and product.coupon.expiry_date > now %}
+                        <div class="discount-badge">
+                            -{{ product.coupon.discount }}%
+                        </div>
+                        {% endif %}
+    
+                    </div>
+                    <div style="display: block; text-align: center; justify-content: center; margin: 10px 0;">
+                        <h5 ><a href="{% url 'product_detail' product.product_id %}" style="font-weight: 600; color: gray;">{{product.name}}</a></h5>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+ <!-- Featured Section Begin -->
+ <section class="featured spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Sản Phẩm</h2>
+                </div>
+                <div class="featured__controls">
+                    <ul>
+                        {% for cate in categories %}
+                        <li data-filter=".{{ cate.name|slugify }}" {% if forloop.first %}class="active"{% endif %}>{{ cate.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+        <div class="row featured__filter">
+            {% for category, products in limited_categorized_products.items %}
+            
+                {% for item in products|slice:":12" %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 mix {{ category.name|slugify }} {% if forloop.first %}first-category{% endif %}">
+                        <div class="featured__item">
+                            <div class="featured__item__pic set-bg" data-setbg="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ STATIC_URL }}path/to/default/image.jpg{% endif %}">
+                                <img style="max-width: 0px;" src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ STATIC_URL }}path/to/default/image.jpg{% endif %}" alt="{{ item.product.name }}">
+                                {% if item.discounted_price != item.product.price %}
+                                <div class="discount-badge">
+                                    -{{ item.product.coupon.discount }}%
+                                </div>
+                                {% endif %}
+                                <ul class="featured__item__pic__hover" style="background: #b6e4c429; border-radius:30px;">
+                                    <li>
+                                        <form action="{% url 'add_to_wishlist' item.product.product_id %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" style="border: none; background: none; color: #762a12e8; font-size: 25px;">
+                                                <i class="fa fa-heart"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{% url 'add_to_cart' item.product.product_id %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" style="border: none; background: none; color: #762a12e8; font-size: 25px;">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="featured__item__text">
+                                <h6>
+                                    <a href="{% url 'product_detail' item.product.product_id %}">
+                                        {{ item.product.name }}
+                                    </a>
+                                </h6>
+                                {% if item.discounted_price != item.product.price %}
+                                    <h5>
+                                        <span class="original-price" style="text-decoration: line-through; color: gray;">
+                                            {{ item.product.price|floatformat:3|cut:"."|add:"₫" }} 
+                                        </span>
+                                        <span class="discounted-price" style="color: red; margin-left: 10px;">
+                                            {{ item.discounted_price|floatformat:3|cut:"."|add:"₫" }} 
+                                        </span>
+                                    </h5>
+                                {% else %}
+                                    <h5>{{ item.product.price|floatformat:3|cut:"."|add:"₫" }} </h5>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Section End -->
+
+<!-- Banner Begin -->
+<div class="banner" style="margin-bottom: 50px;">
+    <img style="margin: auto; display: flex; border-radius: 20px;" src="{% static 'img/banner/bn.png' %}" alt="">
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mixitup@3/dist/mixitup.min.js">
+    $(document).ready(function() {
+        // Lọc sản phẩm khi danh mục được chọn
+        var firstCategory = $(".featured__controls li.active").data("filter");
+        $(".featured__filter .col-lg-3").hide(); // Ẩn tất cả sản phẩm trước
+        $(firstCategory).show(); // Hiển thị sản phẩm của danh mục đầu tiên
+    });
+    
+    document.querySelector('.category-toggle').addEventListener('click', function() {
+        this.parentElement.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', function(event) {
+        var categoryToggle = document.querySelector('.category-toggle');
+        var categoryList = document.querySelector('.category-list');
+        if (!categoryToggle.contains(event.target) && !categoryList.contains(event.target)) {
+            categoryToggle.parentElement.classList.remove('active');
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var containerEl = document.querySelector('.featured__filter');
+        if (containerEl) {
+            mixitup(containerEl, {
+                selectors: {
+                    target: '.mix'
+                },
+                animation: {
+                    duration: 300
+                }
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterButtons = document.querySelectorAll('.featured__controls ul li');
+        const productItems = document.querySelectorAll('.featured__filter .mix');
+    
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Xóa lớp "active" khỏi tất cả các nút
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+    
+                const filter = this.getAttribute('data-filter');
+    
+                productItems.forEach(item => {
+                    if (filter === '*' || item.classList.contains(filter.substring(1))) {
+                        item.style.display = ''; // Hiển thị sản phẩm
+                    } else {
+                        item.style.display = 'none'; // Ẩn sản phẩm
+                    }
+                });
+            });
+        });
+    });
+    
+ </script>
+{%endblock%}

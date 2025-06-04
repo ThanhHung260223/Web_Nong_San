@@ -1,0 +1,584 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Phiếu Nhập Hàng</title>
+        <style>
+            /* Tăng tính thẩm mỹ của giao diện */
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f7fb;
+                margin: 0;
+                padding: 0;
+                color: #333;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1200px;
+                margin: 50px auto;
+                padding: 30px;
+                background-color: #fff;
+                border-radius: 12px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                text-align: center;
+                color: #4CAF50;
+                font-size: 2.5em;
+                margin-bottom: 30px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                font-size: 1.1em;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #555;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group button {
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                font-size: 1em;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+
+            .form-group input:focus,
+            .form-group select:focus {
+                border-color: #4CAF50;
+                outline: none;
+            }
+
+            .form-group button {
+                background-color: #4CAF50;
+                color: white;
+                font-size: 1.1em;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                padding: 12px;
+            }
+
+            .input-group {
+                display: flex;
+                align-items: center;
+            }
+            
+            .input-group select {
+                flex-grow: 1;
+                padding: 12px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+            
+            .input-group-append {
+                padding-left: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .input-group-text {
+                background-color: #f1f1f1;
+                border: 1px solid #ccc;
+                padding: 0 12px;
+                cursor: pointer;
+                border-radius: 8px;
+            }
+            
+
+            .form-group button:hover {
+                background-color: #45a049;
+            }
+
+            .row {
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .col-6 {
+                flex: 1 1 48%;
+            }
+
+            .col-12 {
+                flex: 1 1 100%;
+            }
+
+            table {
+                width: 100%;
+                margin-top: 30px;
+                border-collapse: collapse;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+            th,
+            td {
+                padding: 14px 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            th {
+                background-color: #4CAF50;
+                color: white;
+                font-size: 1.1em;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            .delete-btn {
+                background-color: #f44336;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-size: 0.95em;
+                cursor: pointer;
+                border: none;
+                transition: background-color 0.3s ease;
+            }
+
+            .delete-btn:hover {
+                background-color: #e53935;
+            }
+
+            .center {
+                text-align: center;
+            }
+
+            .form-group button {
+                width: auto;
+                padding: 10px 20px;
+                font-size: 1.1em;
+            }
+
+            .form-group .delete-btn {
+                width: auto;
+                padding: 10px 15px;
+            }
+
+            /* Cải thiện các thẻ input */
+            .input-field {
+                background-color: #f8f8f8;
+            }
+
+            .form-group input[type="date"] {
+                background-color: #f8f8f8;
+            }
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .modal-content {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                width: 300px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+            button {
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 5px;
+                border: none;
+                cursor: pointer;
+            }
+            #closeModal {
+                background-color: #f44336;
+                color: #fff;
+            }
+            #addSupplierForm button {
+                
+                color: #fff;
+            }
+
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Hiệu ứng tối mờ */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            
+            /* Nội dung modal */
+            .modal-content {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 500px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                animation: scaleUp 0.3s ease-in-out;
+            }
+            
+            /* Tiêu đề modal */
+            .modal-content h3 {
+                margin-top: 0;
+                margin-bottom: 20px;
+                font-size: 1.5em;
+                color: #333;
+            }
+            
+            /* Nhóm input */
+            .input-group {
+                margin-bottom: 15px;
+            }
+            
+            /* Các nút bấm */
+            button {
+                padding: 10px 20px;
+                margin: 5px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            
+            button[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+            }
+            
+            button[type="button"] {
+                background-color: #f44336;
+                color: white;
+            }
+            
+            /* Nút bấm hover */
+            button:hover {
+                opacity: 0.9;
+            }
+            
+            /* Hiệu ứng scale modal khi mở */
+            @keyframes scaleUp {
+                0% {
+                    transform: scale(0.9);
+                    opacity: 0;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+            
+            /* Input styling */
+            input[type="text"], select {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+            
+            input[type="text"]:focus, select:focus {
+                outline: none;
+                border-color: #4CAF50;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="container">
+        <h2>Phiếu Nhập Hàng</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Thông tin phiếu nhập - Cột 1 -->
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="supplier">Nhà Cung Cấp:</label>
+                        <div class="input-group">
+                            {{ receipt_form.supplier }}
+                            <!-- Biểu tượng dấu cộng sẽ nằm bên phải trường nhập -->
+                            <a href="javascript:void(0);" class="input-group-append" id="showFormButton">
+                                <span class="input-group-text">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="date_receipt">Ngày Nhập:</label>
+                        {{ receipt_form.date_receipt }}
+                    </div>
+
+                </div>
+                
+                <!-- Chi tiết sản phẩm - Cột 2 -->
+                <div class="col-6">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col-6">
+                                
+                                
+                                <div class="form-group">
+                                    <label for="product">Sản Phẩm:</label>
+                                    <div class="input-group">
+                                        {{ detail_form.product }}
+                                        <!-- Biểu tượng dấu cộng sẽ nằm bên phải trường nhập -->
+                                        <a href="javascript:void(0);" class="input-group-append" id="showProductFormButton">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-plus"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 form-group">
+                                <label for="quantity">Số Lượng:</label>
+                                {{ detail_form.quantity }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 form-group">
+                                <label for="price">Đơn Giá:</label>
+                                {{ detail_form.price }}
+                            </div>
+                            <div class="col-6 form-group">
+                                <label for="unit">Đơn Vị:</label>
+                                {{ detail_form.unit }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 form-group">
+                                <label for="expiry_date">HSD:</label>
+                                {{ detail_form.expiry_date }}
+                                {% comment %} <input type="date" id="date" name="date" value="{{ receipt_form.date.value|date:'Y-m-d' }}" required> {% endcomment %}
+                            </div>
+                            <div class="form-group center" style="margin-top: 20px;">
+                                <button type="submit" name="add_product">Thêm Sản Phẩm</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách sản phẩm đã thêm -->
+            <div class="col-12">
+                <h3>Danh Sách Sản Phẩm Đã Thêm</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sản Phẩm</th>
+                            <th>Số Lượng</th>
+                            <th>Đơn Giá</th>
+                            <th>Đơn Vị</th>
+                            <th>HSD</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in added_products %}
+                        <tr>
+                            <td>{{ product.product_name }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>{{ product.price }}</td>
+                            <td>{{ product.unit }}</td>
+                            <td>{{ product.expiry_date }}</td>
+                            <td>
+                                <button style="background-color: red;" type="submit" class="delete-btn" name="delete_product" value="{{ forloop.counter0 }}">Xóa</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5">Chưa có sản phẩm nào được thêm</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Nút lưu phiếu nhập -->
+            <div class="form-group center">
+                <a href="/admin" style="background-color: #4CAF50; border-radius: 5px; float: left; color: #FFFFFF; font-size:1.1 em; padding: 10px 20px; margin-top: 10px;text-decoration: none;">Admin</a>
+                <button type="submit" name="save_receipt">Lưu Phiếu Nhập</button>
+            </div>
+            <div class="form-group float">
+                
+            </div>
+            
+        </form>
+        <div id="supplierFormModal" style="display: none;">
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <form id="addSupplierForm" method="post">
+                        {% csrf_token %}
+                        <h3>Thêm Nhà Cung Cấp Mới</h3>
+                        <label for="new_supplier">Tên Nhà Cung Cấp:</label>
+                        <input type="text" name="name" id="name" required>
+                        <label for="new_supplier">Địa Chỉ:</label>
+                        <input type="text" name="address" id="address" required>
+                        <label for="new_supplier">SDT:</label>
+                        <input type="text" name="phone" id="phone" required>
+                        <button type="submit">Thêm</button>
+                        <button type="button" id="closeModal">Đóng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div id="productFormModal" style="display: none;">
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <form id="addProductForm" method="post">
+                        {% csrf_token %}
+                        <h3>Thêm Sản Phẩm Mới</h3>
+        
+                        <!-- Trường nhập tên sản phẩm -->
+                        <label for="new_product_name">Tên Sản Phẩm:</label>
+                        <input type="text" name="new_product_name" id="new_product_name" required>
+        
+                        <!-- Trường chọn danh mục sản phẩm -->
+                        <label for="new_product_category">Danh Mục Sản Phẩm:</label>
+                        <div class="input-group">
+                            {{ cate_form.category }}
+                        </div>
+
+                        <button type="submit">Thêm</button>
+                        <button type="button" id="closeProductModal">Đóng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        document.getElementById('showFormButton').addEventListener('click', function() {
+            document.getElementById('supplierFormModal').style.display = 'flex'; // Hiển thị modal
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('supplierFormModal').style.display = 'none'; // Ẩn modal
+        });
+        
+        document.getElementById('addSupplierForm').addEventListener('submit', function(event) {
+            {% comment %} event.preventDefault();  // Ngừng hành động mặc định (ngừng reload trang) {% endcomment %}
+        
+            var name = document.getElementById('name').value; // Lấy giá trị tên nhà cung cấp
+            var address = document.getElementById('address').value;
+            var phone = document.getElementById('phone').value;
+            // Kiểm tra nếu tên nhà cung cấp trống
+            if (!name) {
+                alert("Vui lòng nhập tên nhà cung cấp!");
+                return;
+            }
+        
+            // Lấy CSRF token từ form
+            var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+            // Gửi yêu cầu AJAX tới server
+            fetch('/admin/add_supplier/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    name: name,
+                    address: address,
+                    phone: phone
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Thêm nhà cung cấp thành công!");
+                    document.getElementById('supplierFormModal').style.display = 'none'; // Ẩn modal
+                } else {
+                    alert("Lỗi: " + (data.error || "Không xác định"));
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra!');
+            });
+        });
+        // them sp
+        document.getElementById('showProductFormButton').addEventListener('click', function() {
+            document.getElementById('productFormModal').style.display = 'flex'; // Hiển thị modal
+        });
+        
+        document.getElementById('closeProductModal').addEventListener('click', function() {
+            document.getElementById('productFormModal').style.display = 'none'; // Ẩn modal
+        });
+        
+        document.getElementById('addProductForm').addEventListener('submit', function(event) {
+            {% comment %} event.preventDefault();  // Ngừng hành động mặc định (ngừng reload trang) {% endcomment %}
+            var categorySelect = document.getElementById('category_id');
+            var newProductName = document.getElementById('new_product_name').value;
+            var newProductCategory = categorySelect.value;  // Lấy ID của danh mục
+        
+            // Kiểm tra nếu tên sản phẩm hoặc danh mục trống
+            if (!newProductName || !newProductCategory) {
+                alert("Vui lòng nhập tên và chọn danh mục sản phẩm!");
+                return;
+            }
+        
+            // Lấy CSRF token từ form
+            var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+            fetch('/admin/add_product/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    product_name: newProductName,
+                    product_category: newProductCategory  // Gửi ID của danh mục
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Sản phẩm mới đã được thêm');
+                    document.getElementById('productFormModal').style.display = 'none';
+                } else {
+                    alert(data.error || 'Có lỗi xảy ra!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra!');
+            });
+        });
+        
+    </script>
+
+    </body>
+    </html>

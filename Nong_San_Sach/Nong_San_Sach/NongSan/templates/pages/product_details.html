@@ -1,0 +1,298 @@
+{% extends "page/base.html" %}
+{% load static %}
+
+{% block base %}
+<style>
+    /* Review Star Styles */
+    .review-rating {
+        display: flex;
+        gap: 5px; /* space between stars */
+    }
+
+    .star {
+        font-size: 1.5rem; /* size of the star */
+        color: #dcdcdc; /* grey color for empty stars */
+        cursor: pointer;
+        transition: color 0.2s ease-in-out; /* smooth transition for hover effect */
+    }
+
+    .star.filled {
+        color: #ffbc00; /* gold color for filled stars */
+    }
+
+    /* Hover effect for stars */
+    .star:hover,
+    .star.filled:hover {
+        color: #ffdd66; /* lighter gold on hover */
+    }
+
+    /* Review item styles */
+    .review-item {
+        margin-bottom: 20px; /* space between reviews */
+        padding: 15px;
+        border: 1px solid #f1f1f1;
+        border-radius: 8px;
+        background-color: #fafafa;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+    }
+
+    .review-item p {
+        font-size: 1rem;
+        color: #333;
+        margin: 10px 0;
+    }
+
+    .review-item span {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .review-item small {
+        font-size: 0.9rem;
+        color: #999;
+    }
+
+    
+    /* Review image styles */
+    .review-img {
+        max-width: 250px; /* Kích thước bình thường */
+        max-height: 100px; /* Kích thước bình thường */
+        margin-top: 10px;
+        border-radius: 5px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease; /* Hiệu ứng chuyển động mượt */
+        z-index: 1; /* Thiết lập z-index cơ bản */
+        display: block; /* Đảm bảo ảnh là phần tử khối */
+      
+    }
+
+    /* Khi ảnh được zoom */
+    .review-img.zoomed {
+        transform: scale(4); /* Phóng to ảnh */
+        z-index: 10; /* Đưa ảnh zoom lên trên */
+        position: absolute; /* Vị trí tuyệt đối để ảnh không làm lệch các phần tử khác */
+        top: 50%; /* Căn giữa theo chiều dọc */
+        left: 50%; /* Căn giữa theo chiều ngang */
+        transform: translate(-50%, -50%) scale(4); /* Căn giữa chính xác và phóng to */
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #ff0000;  /* Màu nền đỏ */
+        color: white;
+        padding: 5px 10px;
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 1;
+    }
+    .product__details__price {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    
+    /* Style cho giá gốc (gạch ngang) */
+    .product__details__price .original-price {
+        text-decoration: line-through;
+        color: #777;
+        margin-right: 10px; /* Khoảng cách giữa giá gốc và giá giảm */
+    }
+    
+    /* Style cho giá giảm (nổi bật) */
+    .product__details__price .discounted-price {
+        color: #d9534f; /* Màu đỏ để nổi bật */
+        font-size: 28px;
+        font-weight: 600;
+    }
+    .product__details__tab .nav-tabs:before{
+        width: 310px;
+    }
+    .product__details__tab .nav-tabs:after{
+        width: 310px;
+    }
+
+   
+</style>
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Organi Shop</h2>
+                    <div class="breadcrumb__option">
+                        <a href="./index.html">Trang chủ</a>
+                        <a href="./index.html">Sản phẩm</a>
+                        <span>Chi tiết sản phẩm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Details Section Begin -->
+<section class="product-details spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__pic">
+                    <div class="product__details__pic__item">
+                        <img class="product__details__pic__item--large" src="{{ product.image.url }}" alt="">
+                    </div>
+                    {% if product.coupon and product.coupon.expiry_date > now %}
+                        <div class="discount-badge">
+                            -{{ product.coupon.discount }}%
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__text">
+                    <h3>{{ product.name }}</h3>
+                    <div class="product__details__rating">
+                        {% for _ in stars_full %}
+                            <i class="fa fa-star"></i>
+                        {% endfor %}
+                        {% for _ in stars_empty %}
+                            <i class="fa fa-star-o"></i>
+                        {% endfor %}
+                        <span>({{ count_review }} đánh giá)</span>
+                    </div>
+                    <div class="product__details__price">
+                        {% if product.coupon and product.coupon.expiry_date > now %}
+                            <span class="original-price">{{ product.price|floatformat:3|cut:"."|add:"₫" }} </span> <!-- Giá gốc -->
+                            <span class="discounted-price">{{ discounted_price|floatformat:3|cut:"."|add:"₫" }} </span> <!-- Giá sau giảm -->
+                        {% else %}
+                            {{ product.price|floatformat:3|cut:"."|add:"₫" }} 
+                        {% endif %}
+                    </div>
+                    <p>{{ product.short_descrip }}</p>
+
+
+                    <div class="product__details__quantity">
+                        <div class="quantity">
+                            <div class="pro-qty">
+                                <!-- <span class="dec qtybtn">-</span> -->
+                                <input type="text" value="1">
+                                <!-- <span class="inc qtybtn">+</span> -->
+                            </div>
+                        </div>
+                    </div>
+                    <a href="" class="primary-btn">Thêm vào giỏ hàng</a>
+                    <a href="{% url 'add_to_wishlist' product.product_id %}" class="heart-icon"><span class="icon_heart_alt"></span></a>
+                 <!-- nội dung tại đây -->
+                 <ul>
+                    <li><b>Trạng thái</b> <span>{{ product.status }}</span></li>
+                    
+                </ul>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="product__details__tab">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabs-1" role="tab" aria-selected="false">Thông tin sản phẩm {{ product.name }}</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab" aria-selected="false">Đánh giá <span>({{ count_review }})</span></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="tabs-1" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                <h6>Thông tin</h6>
+                                <div class="rich-text-content">
+                                    {{ product.detail|safe }}  <!-- Use 'safe' to render HTML content -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tabs-2" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                <h6>Tất cả đánh giá của khách hàng đã mua sản phẩm này {{ product.name }}</h6>
+                                <div id="reviews-container">
+                                    {% for review in reviews %}
+                                        <div class="review-item">
+                                            <div class="cont">
+                                                <span>{{ review.account.username }}</span>  
+                                                <small>({{ review.posting_date|date:"d/m/Y" }})</small>
+                                                <div class="review-rating">
+                                                    {% for i in star_range %}
+                                                        <span class="star {% if i <= review.rating_star %}filled{% endif %}">★</span>
+                                                    {% endfor %}
+                                                </div>
+                                                <p>{{ review.feedback_content }}</p>
+                                            </div>
+                                            <div class="review-img-container">
+                                                <img src="{{ review.img_feedback.url }}" class="review-img" alt="Review Image">
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p>Chưa có đánh giá nào.</p>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.primary-btn').addEventListener('click', function (e) {
+            e.preventDefault(); // Ngăn chuyển trang mặc định
+        
+            const quantityInput = document.querySelector('.pro-qty input');
+            const quantity = parseInt(quantityInput.value) || 0;
+        
+            // Kiểm tra nếu số lượng là 0
+            if (quantity === 0) {
+                alert("Số lượng không được là 0. Vui lòng tăng số lượng lên!");
+                return; // Dừng thực hiện thêm vào giỏ hàng
+            }
+        
+            const productId = {{ product.product_id }}; // Lấy ID sản phẩm từ context
+        
+            // Gửi yêu cầu thêm vào giỏ hàng qua Fetch API
+            fetch("{% url 'add_to_cart_detail' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ product_id: productId, quantity: quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    if (data.error === "Bạn cần đăng nhập để thêm vào giỏ hàng.") {
+                        // Nếu chưa đăng nhập, chuyển hướng về trang login
+                        alert(data.error);
+                        window.location.href = "{% url 'login' %}";
+                    } else {
+                        alert(data.error);
+                    }
+                } else {
+                    alert(data.message);
+                    window.location.href = "{% url 'cart' %}"; // Điều hướng đến trang giỏ hàng
+                    document.querySelector('#cart-count').innerText = data.total_quantity; // Cập nhật số lượng giỏ hàng
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+</script>    
+</section>
+<!-- Product Details Section End -->
+
+
+{% endblock %}

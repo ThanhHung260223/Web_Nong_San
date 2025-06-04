@@ -1,0 +1,89 @@
+
+
+
+{% extends "page/base.html" %} 
+{% load socialaccount %}
+
+{% block base %}
+    <div class="form-content my-3 p-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="card shadow-lg border-0 rounded-lg mt-0 mb-3">
+                        <div class="card-header justify-content-center">
+                          <h3 class="font-weight-light my-1 text-center">Đăng Nhập</h3>
+                        </div>
+                        {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <div id="form_errors">
+                                    {% for key, value in form.errors.items %}
+                                        <strong>{{ value }}</strong>
+                                    {% endfor %}
+                                </div>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="col-md-10 offset-md-1">
+                                        <div class="form-group">
+                                            {% comment %} <a href=""
+                                                   class="btn btn-link btn-lg active btn-block">Đăng nhập bằng GitHub</a>
+                                            <a href=""
+                                                   class="btn btn-link btn-lg active btn-block">Đăng nhập bằng Google</a>
+                                            <hr>
+                                            <p class="text-center"><strong>HOẶC</strong></p>
+                                            <hr> {% endcomment %}
+                                            <label class="small mb-1">Tên đăng nhập</label>
+                                            {{ form.username }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-10 offset-md-1">
+                                        <div class="form-group">
+                                          <label class="small mb-1">Mật khẩu</label>
+                                          {{ form.password }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-10 offset-md-1">
+                                        <div class="form-group">
+                                            <!-- Add a Remember me functionality -->
+                                            {{ form.remember_me }}
+                                            <label> Nhớ tôi</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-10 offset-md-1">
+                                        <div class="form-group mt-0 mb-1">
+                                          <button name="login" class="col-md-12 btn btn-dark" id="login">Đăng nhập</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer text-center">
+                            <div class="small">
+                                <a href="{% url 'users-register' %}">Bạn chưa có tài khoản? Đi tới Đăng ký</a><br>
+                                {% comment %} <a href="{% url 'password_reset' %}"><i>Quên mật khẩu?</i></a> {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+     <style>
+        .small a:hover {
+            color: green;
+        }
+    </style>
+{% endblock %}
+

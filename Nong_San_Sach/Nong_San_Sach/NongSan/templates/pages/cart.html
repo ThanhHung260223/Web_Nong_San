@@ -1,0 +1,225 @@
+{%extends "page/base.html"%}
+{% load static %}
+{% block base %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% comment %} <link rel="stylesheet" href="{% static 'myapp/styles.css' %}"> {% endcomment %}
+    <title>Giỏ hàng</title>
+    <style>
+        .cart-container1 {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 50px;
+        }
+        .header__menu ul li{
+            margin: 15px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            {% comment %} border-bottom: 1px solid #ddd; {% endcomment %}
+        }
+
+        
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .quantity-controls input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+
+        .quantity-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .quantity-button:hover {
+            background-color: #45a049;
+        }
+
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .remove-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .total-price {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+            color: #0b931c;
+        }
+
+        .checkout-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .empty-cart {
+            font-size: 16px;
+            color: #999;
+        }
+        /* Kiểu dáng cho container hình ảnh */
+        .discount-container {
+            position: relative;
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+            border-radius: 5px;
+            overflow: hidden; /* Đảm bảo phần tử con không vượt ra ngoài khung */
+        }
+
+        /* Kiểu dáng cho hình ảnh */
+        .discount-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Đảm bảo hình ảnh co giãn mà không bị méo */
+            border-radius: 5px; /* Bo góc hình ảnh */
+        }
+
+        /* Kiểu dáng cho nhãn giảm giá */
+        .discount-badge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background-color: #ff0000; /* Màu nền đỏ */
+            color: white; /* Màu chữ trắng */
+            padding: 2px 5px; /* Khoảng cách nội dung */
+            font-weight: bold; /* In đậm */
+            border-radius: 5px; /* Bo góc nhãn */
+            font-size: 9px; /* Kích thước chữ */
+            z-index: 1; /* Hiển thị trên hình ảnh */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+        }
+        ul, ol {
+            padding: 0;
+            margin: -13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 style="text-align:center; margin-bottom: 50px">Giỏ hàng của bạn</h2>
+<div class="cart-container1">
+    {% if message %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endif %}
+    {% if cart_items %}
+        <ul>
+            {% for item in cart_items %}
+                <li>
+                    <div style="position: relative; max-width: 100px; max-height: 100px; margin-right: 10px; border-radius: 5px; overflow: hidden;">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                             onerror="this.src='{% static 'myapp/no_image_available.png' %}'" 
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                        {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                            <div class="discount-badge">
+                                -{{ item.product.coupon.discount }}%
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div style="width: 400px;">
+                        <span style="font-weight: bold;">{{ item.product.name }}</span><br>
+                        {% comment %} <span>Giá: {{ item.product.price|floatformat:0 }} VNĐ</span> {% endcomment %}
+                        {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                            <span class="original-price" style="text-decoration: line-through; color: #777;">
+                                {{ item.product.price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                            <span class="discounted-price" style=" margin-left: 10px;">   
+                                {{ item.discounted_price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                        {% else %}
+                            <span>{{ item.product.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                        {% endif %}
+                    </div>
+                    <div class="quantity-controls" style=" display: inline-block; justify-content: right;">
+                        <span><strong></strong> {{item.product.status }}: {{item.product.quantity}}</span>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-button" data-product-id="{{ item.product.product_id }}" data-change="-1">-</button>
+                        <input type="text" value="{{ item.quantity }}" readonly>
+                        <button class="quantity-button" data-product-id="{{ item.product.product_id }}" data-change="1">+</button>
+                        <button class="remove-button" data-product-id="{{ item.product.product_id }}">Xóa</button>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <p class="total-price">Tổng tiền: <span>{{ total_price|floatformat:3|cut:"."|add:"₫" }} </span></p>
+        <div>
+            <a href="{% url 'checkout' %}" class="checkout-button">Thanh toán</a>
+        </div>  
+    {% else %}
+        <p class="empty-cart">Giỏ hàng của bạn đang trống.</p>
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.quantity-button').click(function() {
+            event.preventDefault();
+            var productId = $(this).data('product-id');
+            var change = $(this).data('change');
+            var action = change === 1 ? 'add' : 'remove';
+
+            $.post("{% url 'update_cart' %}", {
+                product_id: productId,
+                action: action,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }).done(function() {
+                location.reload();
+            });
+        });
+
+        $('.remove-button').click(function() {
+            var productId = $(this).data('product-id');
+        
+            $.post("{% url 'remove_from_cart' product_id=0 %}".replace('0', productId), {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }).done(function() {
+                location.reload();
+            });
+        });
+    });
+</script>
+
+</body>
+
+{% endblock  %}

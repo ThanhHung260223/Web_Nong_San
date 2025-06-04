@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-17 13:45+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: .\NongSan\forms.py:85
+msgid "Tên"
+msgstr ""
+
+#: .\NongSan\forms.py:87
+msgid "Vui lòng nhập họ tên."
+msgstr "Vui lòng nhập họ tên."
+
+#: .\NongSan\forms.py:88
+msgid "Tên không được vượt quá 100 ký tự."
+msgstr "Tên không được vượt quá 100 ký tự."
+
+#: .\NongSan\forms.py:93
+msgid "Họ"
+msgstr "Họ"
+
+#: .\NongSan\forms.py:97
+msgid "Vui lòng nhập họ."
+msgstr "Vui lòng nhập họ."
+
+#: .\NongSan\forms.py:98
+msgid "Họ không được vượt quá 100 ký tự."
+msgstr "Họ không được vượt quá 100 ký tự."
+
+#: .\NongSan\forms.py:104
+msgid "Tên đăng nhập"
+msgstr "Tên đăng nhập"
+
+#: .\NongSan\forms.py:108
+msgid "Vui lòng nhập tên đăng nhập."
+msgstr "Vui lòng nhập tên đăng nhập."
+
+#: .\NongSan\forms.py:109
+msgid "Tên đăng nhập không được vượt quá 100 ký tự."
+msgstr "Tên đăng nhập không được vượt quá 100 ký tự."
+
+#: .\NongSan\forms.py:113
+msgid "Email"
+msgstr "Email"
+
+#: .\NongSan\forms.py:117
+msgid "Vui lòng nhập địa chỉ email."
+msgstr "Vui lòng nhập địa chỉ email."
+
+#: .\NongSan\forms.py:118
+msgid "Địa chỉ email không hợp lệ!"
+msgstr "Địa chỉ email không hợp lệ!"
+
+#: .\NongSan\forms.py:124
+msgid "Mật khẩu"
+msgstr "Mật khẩu"
+
+#: .\NongSan\forms.py:130
+msgid "Vui lòng nhập mật khẩu."
+msgstr "Vui lòng nhập mật khẩu."
+
+#: .\NongSan\forms.py:131 .\NongSan\forms.py:143
+msgid "Mật khẩu không được vượt quá 50 ký tự."
+msgstr "Mật khẩu không được vượt quá 50 ký tự."
+
+#: .\NongSan\forms.py:136
+msgid "Xác nhận mật khẩu"
+msgstr "Xác nhận mật khẩu"
+
+#: .\NongSan\forms.py:142
+msgid "Vui lòng xác nhận mật khẩu."
+msgstr "Vui lòng xác nhận mật khẩu."
+
+#: .\NongSan\templates\admin\base_admin_site.html:4
+msgid "Django administration"
+msgstr ""
+
+#: .\NongSan\templates\admin\base_admin_site.html:10
+msgid "Home"
+msgstr "Trang chủ"
+
+#: .\NongSan\templates\admin\base_admin_site.html:12
+msgid "Log out"
+msgstr "Đăng xuất"
+
+#: .\Nong_San_Sach\settings.py:94
+msgid "English"
+msgstr ""
+
+#: .\Nong_San_Sach\settings.py:95
+msgid "Vietnamese"
+msgstr ""

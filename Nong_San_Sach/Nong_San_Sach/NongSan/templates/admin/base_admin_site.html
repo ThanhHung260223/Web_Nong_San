@@ -1,0 +1,15 @@
+{% extends "admin/base_admin_site.html" %}
+
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_("Django administration") }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+    <div id="user-tools">
+        {% if user.is_active and user.is_staff %}
+            <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> |
+            <a href="/admin/dashboard/">Dashboard</a> |  <!-- Liên kết đến trang Dashboard -->
+            <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+        {% endif %}
+    </div>
+{% endblock %}

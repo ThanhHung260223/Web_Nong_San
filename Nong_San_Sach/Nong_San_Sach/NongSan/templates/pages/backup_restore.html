@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Backup and Restore</title>
+</head>
+<body>
+    <h1>Database Management</h1>
+    <form id="backup-form" action="{% url 'backup_database' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Backup Database</button>
+    </form>
+    <form id="restore-form" action="{% url 'restore_database' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Restore Database</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('backup-form').onsubmit = function(event) {
+            event.preventDefault();
+            fetch('{% url "backup_database" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerHTML = data.message;
+            });
+        };
+
+        document.getElementById('restore-form').onsubmit = function(event) {
+            event.preventDefault();
+            fetch('{% url "restore_database" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerHTML = data.message;
+            });
+        };
+    </script>
+</body>
+</html>

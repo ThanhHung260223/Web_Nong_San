@@ -1,0 +1,12 @@
+<h2>Thêm Sản Phẩm Mới</h2>
+<form id="addProductForm" method="post">
+    {% csrf_token %}
+    <input type="text" id="product_name" name="product_name" placeholder="Tên sản phẩm" required />
+    <select id="category" name="category" required>
+        <option value="" disabled selected>Chọn danh mục</option>
+        {% for category in categories %}
+        <option value="{{ category.category_id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Thêm sản phẩm</button>
+</form>

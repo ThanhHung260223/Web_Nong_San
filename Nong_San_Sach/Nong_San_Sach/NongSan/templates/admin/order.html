@@ -1,0 +1,161 @@
+<!-- admin_order_list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<style>
+    /* styles.css */
+
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .order-management {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .filters {
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    </style>
+<body>
+    <div class="order-management">
+        <h2>Quản lý đơn hàng</h2>
+
+        <div class="filters">
+            <label>Trạng thái:</label>
+            <select id="status-filter">
+                <option value="">Tất cả</option>
+                <option value="pending">Chờ xác nhận</option>
+                <option value="processing">Chờ lấy hàng</option>
+                <option value="shipping">Chờ giao hàng</option>
+                <option value="delivered">Đã giao</option>
+                <option value="cancelled">Hủy đơn hàng</option>
+            </select>
+            <button onclick="loadOrders()">Lọc</button>
+        </div>
+
+        <table class="order-list">
+            <thead>
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Thời gian</th>
+                    <th>Người đặt</th>
+                    <th>Địa chỉ</th>
+                    <th>Trạng thái</th>
+                    <th>Giá trị</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="order-rows">
+                <!-- Orders will be dynamically loaded -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // orders.js
+
+        function loadOrders() {
+            const status = document.getElementById('status-filter').value;
+            fetch(`/admin/orders/?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const rows = data.orders.map(order => `
+                            <tr>
+                                <td>${order.order_id}</td>
+                                <td>${order.order_time}</td>
+                                <td>${order.account__username}</td>
+                                <td>${order.address_detail}</td>
+                                <td>${order.status_order}</td>
+                                <td>${order.price.toLocaleString()} đ</td>
+                                <td>
+                                    <button onclick="viewOrder(${order.order_id})">Xem</button>
+                                    <button onclick="updateStatus(${order.order_id}, 'cancelled')">Hủy</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                        document.getElementById('order-rows').innerHTML = rows;
+                    } else {
+                        alert('Không thể tải danh sách đơn hàng.');
+                    }
+                });
+        }
+
+        function viewOrder(orderId) {
+            fetch(`/admin/orders/${orderId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const order = data.order;
+                        alert(`
+                            Mã đơn: ${order.order_id}
+                            Người đặt: ${order.account}
+                            Trạng thái: ${order.status_order}
+                            Tổng tiền: ${order.price} đ
+                        `);
+                    } else {
+                        alert('Không thể tải chi tiết đơn hàng.');
+                    }
+                });
+        }
+
+        function updateStatus(orderId, status) {
+            fetch(`/admin/orders/${orderId}/update/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ status })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Cập nhật trạng thái thành công.');
+                        loadOrders();
+                    } else {
+                        alert('Không thể cập nhật trạng thái.');
+                    }
+                });
+        }
+
+    </script>
+</body>
+</html>

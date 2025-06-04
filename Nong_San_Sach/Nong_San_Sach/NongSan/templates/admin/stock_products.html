@@ -1,0 +1,303 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f7fc;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+    
+        .container {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            margin: 0 auto;
+        }
+    
+        h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #007bff;
+        }
+    
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+    
+        th, td {
+            padding: 15px;
+            text-align: left;
+            vertical-align: middle;
+            font-size: 1rem;
+        }
+    
+        td {
+            font-size: 1rem bold;
+            font-weight: bold;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-style: solid;
+            border-width: 0;
+        
+        }
+        th:nth-child(1), td:nth-child(1) {
+            width: 100px; /* Cột hình ảnh */
+        }
+        
+        th:nth-child(2), td:nth-child(2) {
+            width: 300px; /* Cột tên sản phẩm */
+        }
+        
+        th:nth-child(3), td:nth-child(3) {
+            width: 150px; /* Cột số lượng */
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+    
+        tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+    
+        .d-flex {
+            align-items: center;
+        }
+    
+        .form-control {
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+    
+        .btn-primary {
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+    
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .product-row {
+            transition: background-color 0.3s ease;
+        }
+    
+        .product-row:hover {
+            background-color: #f1f5f8;
+        }
+    
+        .no-image {
+            width: 60px;
+            height: 60px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+        }
+
+        h2{
+            text-align:center;
+             
+            margin-top: 0px; 
+            Background-color: #28bcd0;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            color: #Ffff;
+        }
+
+        img{
+            width: 70px%;
+            height: 70px;
+        
+        }
+        .nav-container {
+            display: none;
+            justify-content: flex-start;
+            gap: 20px;
+        }
+
+        .nav-container ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-container li {
+            margin-right: 15px;
+        }
+
+        .nav-container .nav-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .nav-container .nav-link:hover {
+            background-color: #38afc9;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+    </style>
+    
+</head>
+<body>
+    
+    <div class="container mt-5">
+        <h2 >Danh Sách Sản Phẩm Tồn Kho</h2>
+        <div style="display: flex;">
+            <button class="btn btn-primary" style="padding: 8px;" id="menuToggleBtn">☰ Menu</button>
+            <div class="nav-container mt-2" style="padding-left: 20px;" id="navMenu">
+                <ul style="font-weight: bold; ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    
+        <!-- Tìm kiếm -->
+        <div class="d-flex justify-content-between mb-3" style="margin-top: 10px;">
+            <input type="text" id="searchInput" class="form-control w-50" placeholder="Tìm kiếm theo tên sản phẩm...">
+            <button class="btn btn-primary" id="sortBtn">Sắp xếp theo số lượng (Giảm dần)</button>
+        </div>
+
+        <!-- Bảng sản phẩm -->
+        <div class="table-container">
+            <table class="table ">
+                <thead>
+                    <tr style="background-color: #38afc9">
+                        <th></th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    {% for product in stock_products %}
+                        <tr class="product-row">
+                            <td style="float:right;">
+                                <!-- Hiển thị ảnh sản phẩm nếu có -->
+                                <img  src="{{ product.image.url }}" alt="{{ item.product.name }}" onerror="this.src='{% static 'myapp/no_image_available.png' %}'">
+                            </td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Tìm kiếm sản phẩm theo tên
+        document.getElementById('searchInput').addEventListener('input', function() {
+            let searchValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll('.product-row');
+            rows.forEach(function(row) {
+                let productName = row.cells[1].textContent.toLowerCase();
+                if (productName.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Biến trạng thái sắp xếp (true: giảm dần, false: tăng dần)
+        let isDescending = true;
+
+        // Sắp xếp bảng theo số lượng
+        document.getElementById('sortBtn').addEventListener('click', function() {
+            let rows = Array.from(document.querySelectorAll('.product-row'));
+            let sortedRows;
+
+            if (isDescending) {
+                sortedRows = rows.sort(function(a, b) {
+                    let qtyA = parseInt(a.cells[2].textContent);
+                    let qtyB = parseInt(b.cells[2].textContent);
+                    return qtyB - qtyA; // Sắp xếp giảm dần theo số lượng
+                });
+                // Cập nhật trạng thái sắp xếp
+                isDescending = false;
+                document.getElementById('sortBtn').textContent = 'Sắp xếp theo số lượng (Tăng dần)';
+            } else {
+                sortedRows = rows.sort(function(a, b) {
+                    let qtyA = parseInt(a.cells[2].textContent);
+                    let qtyB = parseInt(b.cells[2].textContent);
+                    return qtyA - qtyB; // Sắp xếp tăng dần theo số lượng
+                });
+                // Cập nhật trạng thái sắp xếp
+                isDescending = true;
+                document.getElementById('sortBtn').textContent = 'Sắp xếp theo số lượng (Giảm dần)';
+            }
+
+            // Xóa các hàng cũ trong bảng
+            let tableBody = document.getElementById('productTableBody');
+            tableBody.innerHTML = '';
+
+            // Thêm các hàng đã sắp xếp vào lại bảng
+            sortedRows.forEach(function(row) {
+                tableBody.appendChild(row);
+            });
+        });
+        document.getElementById('menuToggleBtn').addEventListener('click', function() {
+            var menu = document.getElementById('navMenu');
+            var btnText = document.getElementById('menuToggleBtn');
+            
+            // Kiểm tra trạng thái hiện tại của menu và chuyển đổi
+            if (menu.style.display === "none" || menu.style.display === "") {
+                menu.style.display = "block";
+            } else {
+                menu.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,680 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block base %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f9f9fb;
+            margin: 0;
+            padding: 20px;
+        }
+        .container_checkout {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+        .column {
+            flex: 1;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 2px;
+            border-right: 1px solid #787474;
+        }
+        .column1 {
+            position: -webkit-sticky;
+            max-width: 450px;
+            position: sticky; /* Cố định vị trí */
+            top: 0px; /* Khoảng cách từ trên xuống */
+            flex: 1;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            height: calc(100vh - 20px);
+            overflow-y: auto; /* Thêm cuộn nếu nội dung vượt quá chiều cao */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .section-title, .section-title-gh {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #555;
+        }
+        .section-title-gh {
+            font-size: 1.5em;
+            color: #333;
+        }
+        .order-table, .customer-info {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            border-bottom: 1px solid #787474;
+        }
+        .order-table th, .order-table td, .customer-info th, .customer-info td {
+            padding: 10px;
+            text-align: left;
+            
+        }
+        .order-table th {
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .shipping {
+            margin-left: 10px;
+            display: flex;
+            font: 16px Inter, sans-serif;
+            margin-top: 0px;
+            text-align: right;
+        }
+        .total-price {
+            margin-left: 10px;
+            display: flex;
+            font: 16px Inter, sans-serif;
+            margin-top: 20px;
+            text-align: right;
+        }
+        .btn-checkout {
+            display: block;
+            width: 42%;
+            padding: 12px;
+            background-color: #28a745;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-top: 20px;
+            text-decoration: none;
+            float: right;
+        }
+        .btn-checkout:hover {
+            background-color: #218838;
+        }
+        .form-field {
+            position: relative;
+            margin-top: 20px;
+        }
+        .form-field input[type="text"],
+        .form-field select {
+            width: 100%;
+            padding: 10px;
+            max-width: 350px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            background-color: #f9f9fb;
+        }
+        label {
+            margin-bottom: 5px;
+            display: block;
+        }
+        .form-field label {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #aaa;
+            pointer-events: none;
+            transition: 0.3s ease all;
+            background-color: #f9f9fb;
+            padding: 0 5px;
+        }
+        .form-field input:focus + label,
+        .form-field input:not(:placeholder-shown) + label,
+        .form-field select:focus + label,
+        .form-field select:not([value=""]) + label {
+            top: -10px;
+            font-size: 12px;
+            color: #333;
+        }
+        .input-group {
+            display: flex;
+            gap: 20px;
+        }
+        .input-groupbtn {
+            index: 2;
+            position: relative;
+        }
+        .checkbox {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox input {
+            margin-right: 10px;
+        }
+        .shipping-info {
+            color: #333;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+        .checkout-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .checkbox {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox input {
+            margin-right: 10px;
+        }
+        .payment-option {
+            align-items: center; /* Căn giữa theo chiều dọc */
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9f9fb;
+        }
+        .payment-option label {
+            display: block; /* Đảm bảo nhãn chiếm toàn bộ chiều rộng */
+        }
+        .payment-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .payment-details {
+            margin-top: 10px;
+            display: none; /* Initially hidden */
+        }
+        .coupon{
+            
+            display: block;
+            padding: 12px 12px 0px 12px;
+            background-color: #f1f1f1;
+
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-top: 20px;
+            cursor: pointer;
+            float: right;
+            
+        }
+        .coupon:hover {
+            background-color: #c9c9c9   ;
+        }
+        .confirm-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 30px;
+            cursor: pointer;
+        }
+        .confirm-button:hover {
+            background-color: #0056b3;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 5px;
+            left: 2px;
+            background-color: #ff0000; /* Màu nền đỏ */
+            color: white; /* Màu chữ trắng */
+            padding: 2px 5px; /* Khoảng cách nội dung */
+            font-weight: bold; /* In đậm */
+            border-radius: 5px; /* Bo góc nhãn */
+            font-size: 9px; /* Kích thước chữ */
+            z-index: 1; /* Hiển thị trên hình ảnh */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+        }
+        .header__menu ul li{
+            margin: 20px;
+            
+        }
+        ul, ol {
+            padding: 0;
+            margin: -13px;
+        }
+       
+        .nice-select.open .list {
+            height: 300px;
+            overflow-y: auto;
+        }
+        
+    </style>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            // JavaScript cho việc hiển thị thông tin thanh toán
+            document.addEventListener('DOMContentLoaded', function () {
+                const paymentOptions = document.querySelectorAll('input[name="payment_method"]');
+                const bankTransferDetails = document.getElementById('bank-transfer-details');
+            
+                // Kiểm tra sự tồn tại của phần tử ngân hàng
+                if (!bankTransferDetails) {
+                    console.error('Phần tử thông tin chuyển khoản ngân hàng không tồn tại!');
+                    return; // Dừng thực thi nếu không tìm thấy phần tử
+                }
+            
+                paymentOptions.forEach(option => {
+                    option.addEventListener('change', function () {
+                        if (this.value === 'Chuyển khoản qua ngân hàng') {
+                            bankTransferDetails.style.display = 'block'; // Hiện thông tin chuyển khoản ngân hàng
+                        } else {
+                            bankTransferDetails.style.display = 'none'; // Ẩn thông tin chuyển khoản ngân hàng
+                        }
+                    });
+                });
+                
+                function handleLogin(user) {
+                    const accountId = user.id;  // Giả sử `user` chứa thông tin của người dùng
+                    sessionStorage.setItem('account_id', accountId); // Lưu ID vào session storage
+                }
+                
+    
+                // Xác nhận đơn hàng
+                $('#confirm-order').click(function() {
+                    const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || null;
+                    const orderData = {
+                        address_detail: $('#address').val(),  // Địa chỉ chi tiết
+                        total_prices: $('#final-price').text().trim(),  // Tổng giá trị đơn hàng
+                        order_items: getOrderItems(),  // Lấy danh sách sản phẩm trong đơn hàng
+                        payment_method: paymentMethod
+                    };
+                    // Kiểm tra các trường bắt buộc
+                    const missingFields = [];
+                    if (!orderData.address_detail) missingFields.push('Địa chỉ chi tiết');
+                    if (!orderData.total_prices) missingFields.push('Tổng giá trị đơn hàng');
+                    if (orderData.order_items.length === 0) missingFields.push('Danh sách sản phẩm');
+                
+                    if (missingFields.length > 0) {
+                        alert('Vui lòng điền đầy đủ thông tin! Thiếu: ' + missingFields.join(', '));
+                    } else {
+                        $.ajax({
+                            type: 'POST',
+                            url: '{% url "confirm_order" %}',  // URL đến hàm xác nhận đơn hàng
+                            data: JSON.stringify(orderData),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                alert('Đơn hàng đã được xác nhận thành công!');
+                                window.location.href = "{% url 'track_orders' %}";
+                                // Chuyển hướng hoặc cập nhật giao diện người dùng nếu cần
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Có lỗi xảy ra! Vui lòng kiểm tra lại.');
+                            }
+                        });
+                    }
+                });
+                
+                // Hàm lấy danh sách sản phẩm trong đơn hàng
+                function getOrderItems() {
+                    let items = [];
+                    $('.order-item').each(function() {
+                        items.push({
+                            product_id: $(this).data('product-id'), // Lấy ID sản phẩm
+                            quantity: 1, // Thay đổi nếu cần
+                            item_total: $(this).find('.item-total').text().trim() // Lấy giá trị tổng của mặt hàng
+                        });
+                    });
+                    return items;
+                }
+                            
+    
+                $(document).ready(function() {
+                    // Khởi tạo Nice Select cho tất cả các dropdown
+                    $('#province-select, #district-select, #ward-select').niceSelect();
+                
+                    // Xử lý sự kiện thay đổi tỉnh/thành phố
+                    $('#province-select').change(function() {
+                        var provinceId = $(this).val();
+                        if (provinceId) {
+                            $.ajax({
+                                url: '{% url "get_districts" %}',
+                                data: { 'province_id': provinceId },
+                                success: function(data) {
+                                    $('#district-select').empty().append('<option value="">Chọn quận/huyện</option>');
+                                    $.each(data, function(index, district) {
+                                        $('#district-select').append('<option value="' + district.district_id + '">' + district.name + '</option>');
+                                    });
+                                    $('#district-select').prop('disabled', false).niceSelect('update'); // Cập nhật Nice Select
+                                    $('#ward-select').empty().append('<option value="">Chọn phường/xã</option>').prop('disabled', true).niceSelect('update');
+                                },
+                                error: function() {
+                                    alert("Không thể tải danh sách quận/huyện. Vui lòng thử lại.");
+                                }
+                            });
+                        } else {
+                            $('#district-select').empty().append('<option value="">Chọn quận/huyện</option>').prop('disabled', true).niceSelect('update');
+                            $('#ward-select').empty().append('<option value="">Chọn phường/xã</option>').prop('disabled', true).niceSelect('update');
+                        }
+                    });
+                
+                    // Xử lý sự kiện thay đổi quận/huyện
+                    $('#district-select').change(function() {
+                        var districtId = $(this).val();
+                        if (districtId) {
+                            $.ajax({
+                                url: '{% url "get_wards" %}',
+                                data: { 'district_id': districtId },
+                                success: function(data) {
+                                    $('#ward-select').empty().append('<option value="">Chọn phường/xã</option>');
+                                    $.each(data, function(index, ward) {
+                                        $('#ward-select').append('<option value="' + ward.ward_id + '">' + ward.name + '</option>');
+                                    });
+                                    $('#ward-select').prop('disabled', false).niceSelect('update'); // Cập nhật Nice Select
+                                },
+                                error: function() {
+                                    alert("Không thể tải danh sách phường/xã. Vui lòng thử lại.");
+                                }
+                            });
+                        } else {
+                            $('#ward-select').empty().append('<option value="">Chọn phường/xã</option>').prop('disabled', true).niceSelect('update');
+                        }
+                    });
+                    
+                });                
+                
+            });
+            
+            // coupon
+            document.addEventListener("DOMContentLoaded", function () {
+                const applyCouponButton = document.querySelector(".coupon button");
+                const totalPriceElement = document.querySelector("#total-price");
+            
+                if (applyCouponButton) {
+                    applyCouponButton.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        
+                        const couponCode = document.querySelector("#coupon").value;
+                        let totalPrice = parseFloat(
+                            totalPriceElement.textContent.replace(" đ", "").replace(",", "")
+                        );
+            
+                        if (couponCode.trim() === "") {
+                            alert("Vui lòng nhập mã khuyến mãi.");
+                            return;
+                        }
+            
+                        fetch("{% url 'apply_coupon' %}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": "{{ csrf_token }}",
+                            },
+                            body: JSON.stringify({
+                                coupon: couponCode,
+                                total_price: totalPrice,
+                            }),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    // Cập nhật tổng tiền
+                                    // Cập nhật giảm giá và thành tiền
+                                    //document.querySelector("#discount-price").textContent = `${(totalPrice - data.new_total).toLocaleString()} đ`;
+                                    //document.querySelector("#final-price").textContent = `${data.new_total.toLocaleString()} 000đ`;
+                                    // Giảm giá
+                                    const discount = totalPrice - data.new_total;
+                                    // Đảm bảo rằng giá trị là số và có 3 chữ số thập phân, rồi hiển thị
+                                    document.querySelector("#discount-price").textContent = `${discount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₫`;
+
+                                    // Thành tiền
+                                    const finalPrice = data.new_total;
+                                    // Đảm bảo thành tiền được định dạng đúng
+                                    document.querySelector("#final-price").textContent = `${finalPrice.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₫`;
+                                    alert(data.message);
+                                } else {
+                                    alert(data.message);
+                                }
+                            })
+
+                            
+                            .catch((error) => console.error("Lỗi:", error));
+                    });
+                }
+                
+            });
+            function validatePhone(input) {
+                // Loại bỏ bất kỳ ký tự không phải số
+                input.value = input.value.replace(/[^0-9]/g, '');
+        
+                // Giới hạn chiều dài không vượt quá 10 ký tự
+                if (input.value.length > 10) {
+                    input.value = input.value.slice(0, 10);
+                }
+            }
+            provinceSelect.addEventListener('change', function () {
+                const selectedOptions = Array.from(provinceSelect.selectedOptions);
+                if (selectedOptions.length > 5) {
+                    provinceSelect.style.overflowY = 'scroll'; 
+                } else {
+                    provinceSelect.style.overflowY = ''; 
+                }
+            });
+            
+            
+        </script>
+
+        {% if removed_products %}
+            <div id="alertMessage" class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                <strong>Thông báo:</strong> Các sản phẩm sau đã bị xóa khỏi giỏ hàng do không đủ số lượng: 
+                <ul style="margin-top: 7px; margin-left: 15px;">
+                    {% for product in removed_products %}
+                        <li>{{ product }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <script>
+                // Tự động ẩn thông báo sau 5 giây
+                setTimeout(function() {
+                    var alertMessage = document.getElementById('alertMessage');
+                    if (alertMessage) {
+                        alertMessage.style.display = 'none';  // Sử dụng display: none để ẩn mà không thay đổi bố cục
+                    }
+                }, 4000); // Thời gian (4000ms = 4 giây)
+            </script>
+        {% endif %}
+    
+</head>
+<body>
+    <div class="container_checkout">
+        {% comment %} {% if removed_products %}
+            <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                <strong>Thông báo:</strong> Các sản phẩm sau đã bị xóa khỏi giỏ hàng do không đủ số lượng: 
+                <ul>
+                    {% for product in removed_products %}
+                        <li>{{ product }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %} {% endcomment %}
+
+
+        <!-- Customer Information Column -->
+        <div class="column">
+            
+            <div class="section-title-gh">Giao Hàng</div>
+            
+            <div class="form-field" style="height: 200px, overflow-y: auto">
+                <select style="width: 350px;" id="province-select">
+                    <option value="">Chọn tỉnh/thành phố</option>
+                    {% for province in provinces %}
+                        <option value="{{ province.province_id }}">{{ province.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <div class="form-field">
+                    <label for="district-select">Chọn Quận/Huyện</label>
+                    <select id="district-select" disabled>
+                        <option value="">Chọn quận/huyện</option>
+                    </select>
+                </div>
+            
+                <div class="form-field">
+                    <label for="ward-select">Chọn Phường/Xã</label>
+                    <select id="ward-select" disabled>
+                        <option value="">Chọn phường/xã</option>
+                    </select>
+                </div>
+            </div>
+            
+            
+            <div class="form-field">
+                <input type="text" id="lastName" placeholder=" " required>
+                <label for="lastName">Họ và tên</label>
+            </div>
+            
+
+            <div class="form-field">
+                <input type="text" id="address" placeholder=" " required>
+                <label for="address">Địa chỉ nhận hàng</label>
+            </div>
+
+            
+            <div class="form-field">
+                <input type="text" id="phone" placeholder=" " required maxlength="10" oninput="validatePhone(this)" pattern="^\d{10}$">
+                <label for="phone">Điện thoại</label>
+            </div>
+
+            {% comment %} <div class="checkbox">
+                <input type="checkbox" id="saveAddress">
+                <label for="saveAddress">Lưu địa chỉ này</label>
+            </div> {% endcomment %}
+            <form method="post" action="{% url 'confirm_order' %}">
+                    {% csrf_token %}
+                <div style="padding-top: 20px" class="section-title-gh">Phương Thức Thanh Toán</div>
+
+                <!-- Phương thức thanh toán chuyển khoản ngân hàng -->
+                <div class="payment-option">
+                    <div style="display: flex;  ">
+                    <input type="radio" id="bank-transfer" name="payment_method" value="Chuyển khoản qua ngân hàng" required>
+                    <label for="bank-transfer" style="margin-top:5px; margin-left: 10px;">
+                        <i class="icon-bank"></i> Chuyển khoản qua ngân hàng
+                    </label>
+                    </div>
+                    <div class="payment-details" id="bank-transfer-details" style="display: none;">
+                        <p>Quét mã QR để thanh toán.</p>
+                        <img src="\media\QR\MAQR.jpg" alt="Mã QR ví điện tử" class="qr-code">
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán tiền mặt khi nhận hàng -->
+                <div class="payment-option">
+                    <div style="display: flex;  ">
+                    <input type="radio" id="cash-on-delivery" name="payment_method" value="Thanh toán khi nhận hàng" required>
+                    <label for="cash-on-delivery" style="margin-top:5px; margin-left: 10px;">
+                        <i class="icon-cash"></i> Thanh toán khi nhận hàng
+                    </label>
+                </div>
+                </div>
+            </form>
+            {% comment %} <button class="confirm-button"></button> {% endcomment %}
+
+            <div class="input-group">
+                <a style="margin-top: 30px; margin-right: 372px; color: white; background-color: #007bff; padding: 12px; border-radius: 5px;" href="{% url 'cart' %}">Giỏ hàng</a>
+                <div>
+                    <button class="confirm-button" id="confirm-order">Xác nhận đơn hàng</button>
+                </div>
+            </div>
+
+            
+
+            {% comment %} <div style="padding-top: 28px; font-size: 1.5em; color: #333; font-weight: bold;" >Thanh Toán</div>
+            <label style="color: #b5b2b2">Địa chỉ thanh toán của phương thức thanh toán phải khớp với địa chỉ giao hàng. Toàn bộ các giao dịch được bảo mật và mã hóa.</label> {% endcomment %}
+        </div>
+
+        <!-- Order Details Column -->
+        <div class="column1">
+            
+            <div class="section-title">Thông tin đơn hàng</div>
+            <table class="order-table">
+                <tbody>
+                    {% for item in items_with_totals %}
+                    <tr class="order-item" data-product-id="{{ item.product.product_id }}">
+                        {% csrf_token %}
+                        <td style="width: 90px; position: relative;"> <!-- Thêm position: relative cho ô này -->
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                onerror="this.src='{% static 'myapp/no_image_available.png' %}'" 
+                                style="width: 100%; height: auto; border-radius: 5px; border: 1px solid #c0c0c0;">
+                        {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                            <div class="discount-badge">
+                                -{{ item.product.coupon.discount }}%
+                            </div>
+                        {% endif %}
+                            <span class="quantity-badge" style="font-weight: bold; position: absolute; top: 0; right: 0; font-size: 15px; background: #7fad39; padding: 2px 8px; border-radius: 12px; color: white;">{{ item.quantity }}</span>
+                        </td>
+                        <td style="width: 100px; font-size: 13px;">{{ item.product.name }}</td>
+                        {% comment %} <td class="item-total">{{ item.item_total }} đ</td> <!-- Thêm class item-total --> {% endcomment %}
+                        {% if item.product.coupon and item.product.coupon.expiry_date > now %}
+                        <td style="float: right; padding-top: 23px; ">
+                            <span class="original-price" style="text-decoration: line-through; color: #777;">
+                                {{ item.product.price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                            <span class="discounted-price" style=" margin-left: 10px;">   
+                                {{ item.discounted_price|floatformat:3|cut:"."|add:"₫" }} 
+                            </span>
+                        </td >
+                        {% else %}
+                        <td style="float: right; padding-top: 23px;">
+                            <span>{{ item.product.price|floatformat:3|cut:"."|add:"₫" }} </span>
+                        </td>
+                        {% endif %}
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>                
+            </table>
+            <div class="total-price">
+                <label>Tổng Tiền:</label>
+                <p style="float:right; width: 80%" id="total-price">{{ total_price|floatformat:3|cut:"."|add:"₫" }} </p>
+            </div>
+            <div class="input-group">
+                <div class="form-field" style="width: 68%; margin-left: 10px;">
+                    <input type="text" id="coupon" placeholder=" " required>
+                    <label>Nhập mã khuyến mãi</label>
+                </div>
+                <div class="coupon">
+                    <button style="border: none; font-weight: bold; color: #4c4c4c;" type="button">Áp dụng</button>
+                </div>
+                
+            </div>
+            <div class="total-price">
+                <label>Giảm giá:</label>
+                <p style="float:right; width: 80%" id="discount-price">0 đ</p>
+            </div>
+            
+            <div class="shipping">
+                <label >Phí vận chuyển:</label>
+                <p style="float:right; width: 70%" id=""> MIỄN PHÍ</p>
+            </div>
+            <div class="total-price">
+                <label>Thành Tiền:</label>
+                <p style="float:right; width: 75%" id="final-price">{{ total_price|floatformat:3|cut:"."|add:"₫" }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
